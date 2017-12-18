@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.liu.redisTest.IDao.personMapper">
+<cache type="com.liu.redisTest.redisUntll.method1.MybatisRedisCache" />
+<!-- <cache/> -->
+  <resultMap id="BaseResultMap" type="com.liu.redisTest.domain.person">
+    <id column="ID" jdbcType="BIGINT" property="id" />
+    <result column="NAME" jdbcType="VARCHAR" property="name" />
+    <result column="AGE" jdbcType="INTEGER" property="age" />
+    <result column="ADDR_ID" jdbcType="BIGINT" property="addrId" />
+  </resultMap>
+  
+  <sql id="Base_Column_List">
+    ID, NAME, AGE, ADDR_ID
+  </sql>
+	
+  
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultType="com.liu.redisTest.domain.person">
+    <!-- select 
+    <include refid="Base_Column_List" />
+    from person
+    where ID = #{id,jdbcType=BIGINT} -->
+    SELECT t1.name,t1.age,
+                  t2.TITLE,
+                  t2.DATE
+                  
+              FROM
+                 person t1,
+                 events t2
+            WHERE t1.id=t2.personid and t1.id = 1
+    
+    
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from person
+    where ID = #{id,jdbcType=BIGINT}
+  </delete>
+  <insert id="insert" parameterType="com.liu.redisTest.domain.person">
+    insert into person (ID, NAME, AGE, 
+      ADDR_ID)
+    values (#{id,jdbcType=BIGINT}, #{name,jdbcType=VARCHAR}, #{age,jdbcType=INTEGER}, 
+      #{addrId,jdbcType=BIGINT})
+  </insert>
+  <insert id="insertSelective" parameterType="com.liu.redisTest.domain.person">
+    insert into person
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        ID,
+      </if>
+      <if test="name != null">
+        NAME,
+      </if>
+      <if test="age != null">
+        AGE,
+      </if>
+      <if test="addrId != null">
+        ADDR_ID,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=BIGINT},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="age != null">
+        #{age,jdbcType=INTEGER},
+      </if>
+      <if test="addrId != null">
+        #{addrId,jdbcType=BIGINT},
+      </if>
+    </trim>
+  </insert>
+  <update id="updateByPrimaryKeySelective" parameterType="com.liu.redisTest.domain.person">
+    update person
+    <set>
+      <if test="name != null">
+        NAME = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="age != null">
+        AGE = #{age,jdbcType=INTEGER},
+      </if>
+      <if test="addrId != null">
+        ADDR_ID = #{addrId,jdbcType=BIGINT},
+      </if>
+    </set>
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="com.liu.redisTest.domain.person">
+    update person
+    set NAME = #{name,jdbcType=VARCHAR},
+      AGE = #{age,jdbcType=INTEGER},
+      ADDR_ID = #{addrId,jdbcType=BIGINT}
+    where ID = #{id,jdbcType=BIGINT}
+  </update>
+  
+  
+ 
+  
+  <resultMap id="BaseResultMap_many" type="com.liu.redisTest.domain.person" extends="BaseResultMap">
+    
+  
+    <association property="events" javaType="com.liu.redisTest.domain.events"  column="personid">
+    <id column="ID" jdbcType="BIGINT" property="id" />
+    <result column="TITLE" jdbcType="VARCHAR" property="title" />
+    <result column="DATE" jdbcType="TIMESTAMP" property="date" />
+    </association>
+ 	<collection property="address" ofType="com.liu.redisTest.domain.address" column="personid">
+	<id column="ID" jdbcType="BIGINT" property="id" />
+    <result column="COUNTRY" jdbcType="VARCHAR" property="country" />
+    <result column="PROVINCE" jdbcType="VARCHAR" property="province" />
+    <result column="CITY" jdbcType="VARCHAR" property="city" />
+    <result column="STREET" jdbcType="VARCHAR" property="street" />
+	</collection>
+  </resultMap>
+  
+  
+  
+
+  <!--集合返回写类名，接口写list-->
+  <select id="selectByxiaoyu" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    select 
+    <include refid="Base_Column_List" />
+    from person
+    where ID = #{id}
+  </select>
+  <!-- 一对一查询返回指定类，指定resultmap，指定部分结果集的映射， -->
+  <select id="selectByzhonghe" parameterType="java.lang.Long" resultMap="BaseResultMap">
+    SELECT t1.name,t1.age,
+                  t2.TITLE,
+                  t2.DATE,
+                  t3.COUNTRY,
+                  t3.PROVINCE,
+                  t3.CITY
+              FROM
+                 person t1,
+                 events t2,
+                 address t3
+            WHERE t1.id=t2.personid and t1.id=t3.personid
+  </select>
+  <!-- 综合查询 -->
+  <select id="selecthashmap" parameterType="java.lang.Long" resultType="hashmap">
+    select 
+    <include refid="Base_Column_List" />
+    from person
+    <!-- where ID &lt; #{id} -->
+  </select>
+  <select id="selectID" parameterType="java.lang.Long" resultType="java.lang.Integer"> 
+         SELECT id FROM person  
+   </select>
+  
+  <select id="selecAll" parameterType="java.lang.Long" resultType="com.liu.redisTest.domain.person">
+    select 
+    <include refid="Base_Column_List" />
+    from person
+  </select>
+  <!-- 逻辑分页 -->
+    <select id="findperson" resultType="com.liu.redisTest.domain.person">
+        select * from person
+    </select>
+    
+    <!-- 物理分页 -->
+    <select id="findperson2" parameterType="Map"  resultType="com.liu.redisTest.domain.person">
+        select * from person
+        <if test="start!=null and size!=null">
+            limit #{start}, #{size}
+        </if>
+    </select>
+  
+  
+</mapper>

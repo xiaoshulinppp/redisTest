@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >  
+<mapper namespace="com.liu.redisTest.IDao.UserDao" >
+    
+    <resultMap id="userResult" type="User">
+        <result column="id" property="id"/>
+        <result column="userame" property="username"/>
+        <result column="password" property="password"/>
+        <result column="age" property="age"/>
+    </resultMap>
+    
+    <insert id="addUser" parameterType="User">
+        insert into t_user(username,password,age) values(#{username},#{password},#{age})
+    </insert>
+    
+    <update id="deleteUser" parameterType="User">
+        delete * from t_user where id = #{id}
+    </update>
+    
+    <update id="updateUser" parameterType="User">
+        update t_user set
+        <if test="username != null and username != ''"> username = #{username},</if>
+        <if test="password != null and password != ''"> password = #{password},</if>
+        <if test="age != null and age != ''"> age = #{age}</if>
+        where 1=1
+        <if test="id != null and id != ''">and id = #{id}</if>
+        
+    </update>
+    
+    <select id="getUser" parameterType="int" resultType="com.liu.redisTest.domain.UserVO" >
+        select * from t_user where id = #{id}
+    </select>
+    
+    <select id="getUserById" parameterType="int" resultType="User" >
+        select username from t_user where id = #{id}
+    </select>
+    <!-- 里面可以加其他排序或是筛选条件 -->
+    <select id="findPage" resultType="com.liu.redisTest.domain.UserVO" parameterType="com.liu.redisTest.intercept.Page">
+       select * from t_user
+    </select>
+</mapper>
