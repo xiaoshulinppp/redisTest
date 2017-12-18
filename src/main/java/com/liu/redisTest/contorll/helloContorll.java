@@ -13,6 +13,9 @@ public class helloContorll {
 	    @Autowired
 	    private UserService userService;
 	     
+	    
+	    
+	    
 	    helloContorll(){
 	    	System.out.println("helloContorll bean,实例化了");
 	    }
